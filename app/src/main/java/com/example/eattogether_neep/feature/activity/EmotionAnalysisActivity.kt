@@ -59,7 +59,7 @@ private var smileSum=0.0F
 private var neutralProb=0.0F
 private var neutralSum=0.0F
 
-
+// Firebase를 이용한 Face Detection (단, 이때는 이미지 캡쳐 안됨)
 class EmotionAnalysisActivity : AppCompatActivity() {
     private lateinit var viewFinder: TextureView
     private lateinit var uuid: String
@@ -90,7 +90,7 @@ class EmotionAnalysisActivity : AppCompatActivity() {
 
         try {
 
-            //IO.socket 메소드는 은 저 URL 을 토대로 클라이언트 객체를 Return 합니다.
+            //IO.socket 메소드는 URL를 토대로 클라이언트 객체를 Return
             mSocket = IO.socket(SOCKET_URL)
         } catch (e: URISyntaxException) {
             Log.e("EmotionAnalysisActivity", e.reason)
@@ -101,7 +101,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
         intentFilter = IntentFilter()
         with(intentFilter){
             addAction("com.example.eattogether_neep.RESULT_SAVE_IMAGE")
-            //addAction("com.example.eattogether_neep.RESULT_FINISH_PREDICT")
         }
         registerReceiver(socketReceiver, intentFilter)
 
@@ -119,26 +118,12 @@ class EmotionAnalysisActivity : AppCompatActivity() {
     private fun startCameraThread(){
         // Request camera permissions
         if (allPermissionsGranted()) {
-
-            // 이거 둘 중 하나만 써야하려나..?
-            //viewModel.startCamera(this, cam_emotion)
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
-        /*viewModel.faces.observe(
-            this,
-            androidx.lifecycle.Observer { faces ->
-                if (faces != null){
-                    emotion.faces=faces
-                }
-            }
-        )*/
-
-        // Set up the listener for take photo button
-        //camera_capture_button.setOnClickListener { takePhoto() }
         @SuppressLint("HandlerLeak")
         mHandler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -161,7 +146,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
                     neutralProb=(1-smileProb)+(random-10)/100
                     if(neutralProb<0)
                         neutralProb+=(randomP+10)/100
-                    //Log.d("Neutral Dummy value", neutralProb.toString())
                     neutralSum+=neutralProb
 
                     // 3초마다 기기번호, 음식번호
@@ -177,7 +161,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
                 else {
                     val intent = Intent(this@EmotionAnalysisActivity,RankingActivity::class.java)
                     intent.putExtra("roomName", roomName)
-                    //Toast.makeText(this@EmotionAnalysisActivity, "소켓안받음", Toast.LENGTH_SHORT).show()
                     this@EmotionAnalysisActivity.startActivity(intent)
                     this@EmotionAnalysisActivity.finish()
                     return
@@ -198,8 +181,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
     }
 
     private fun takePhoto() {
-        //setUpCameraOutputsFront()
-        // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
         // Create time-stamped output file to hold the image
@@ -207,11 +188,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
             outputDirectory,
             SimpleDateFormat(FILENAME_FORMAT, Locale.US
             ).format(System.currentTimeMillis()) + ".jpg")
-        /*photoFile=File(
-            Environment.getExternalStorageDirectory(),SimpleDateFormat(FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg")*/
-
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile!!).build()
 
         // Set up image capture listener, which is triggered after photo has
@@ -225,22 +201,10 @@ class EmotionAnalysisActivity : AppCompatActivity() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     var photoPath = photoFile.canonicalPath
                     savedUri = Uri.fromFile(photoFile)
-                    //val savedUri = Uri.parse("https://upload.wikimedia.org/wikipedia/commons/4/41/Sunflower_from_Silesia2.jpg")//Uri.fromFile(photoFile)
                     Log.d("Before Base64 encoder",savedUri.toString())
                     Log.d("Base64 encoder111", encoder1(photoFile))
                     Log.d("Base64 encoder222", encoder2(savedUri))
-                    //base64Str=encoder2(saveUri)
-                    //saveImage(imageOrder, base64Str)
-
                     Log.d("Base64 encoder333", encoder3(photoPath))
-                    //val result=decoder(encoder(photoFile.toString()), photoFile.toString())
-                    //Log.d("Base64 decoded", result.toString())
-
-                    //encoder2(savedUri)
-
-                    //val msg = "Photo capture succeeded: $savedUri"
-                    //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    //Log.d(TAG, msg)
                 }
             })
     }
@@ -255,16 +219,13 @@ class EmotionAnalysisActivity : AppCompatActivity() {
     // Saved Broken Image
     private fun encoder2(imageUri: Uri?): String {
         val input = imageUri?.let { this.contentResolver.openInputStream(it) }
-        //val bm = BitmapFactory.decodeResource(resources, R.drawable.test)
         val image = BitmapFactory.decodeStream(input, null, null)
         //encode image to base64 string
         val baos = ByteArrayOutputStream()
-        //bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         image!!.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         var imageBytes = baos.toByteArray()
 
         return android.util.Base64.encodeToString(imageBytes, android.util.Base64.NO_WRAP)
-        //return Base64.getEncoder().encodeToString(imageBytes) // Not Worked, too.
     }
 
     // Saved Broken Image
@@ -282,46 +243,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
         val b = baos.toByteArray()
 
         return Base64.getEncoder().encodeToString(b)
-    }
-
-    // Convert Image to BitmapArray?
-    private fun encoder4(path: String): String {
-        return ""
-    }
-
-    fun decoder(base64Str: String, pathFile: String): Unit{
-        val imageByteArray = Base64.getDecoder().decode(base64Str)
-        File(pathFile).writeBytes(imageByteArray)
-    }
-
-
-    // 이미지 Base64코드 전송
-    private fun saveImage(imageOrder: Int, base64Str: String) {
-        Log.d("SaveImage Called", "")
-        val work = Intent()
-        var image_666="Dummy Base64 Code"
-        //var image64=encoder(photoFile.toString())
-        var foodImage22="file:///storage/emulated/0/Android/media/com.soyeon.cameraxtutorial/CameraX%20Tutorial/2020-08-28-21-24-24-668.jpg"
-        val encodedURL = Base64.getUrlEncoder().encodeToString(foodImage22.toByteArray())
-        //var image64=foodImage22.base64decoded
-        //encoder
-
-        ///val encodeString=encoder("src/main/res/drawable/neww.JPG")
-        Log.d("SaveImage Called:",base64Str)
-        work.putExtra("serviceFlag", "saveImage")
-        work.putExtra("image", base64Str)
-        work.putExtra("uuid", uuid)
-        work.putExtra("imageOrder", imageOrder)
-        SocketService.enqueueWork(this, work)
-    }
-
-    private fun avgPredict(imageOrder:Int) {
-        Log.d("Average Predict Called", "Emotion Analysis enqueue every 1seconds")
-        val work = Intent()
-        work.putExtra("serviceFlag", "avgPredict")
-        work.putExtra("uuid", uuid)
-        work.putExtra("imageOrder", imageOrder)
-        SocketService.enqueueWork(this, work)
     }
 
     private fun savePredict(avgHappy:Float,avgNeutral:Float, imageOrder: Int ) {
@@ -371,7 +292,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
             if (face.smilingProbability != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
                 smileProb = face.smilingProbability
                 if (smileProb > 0) {
-                    //Toast.makeText(this, "The degree of your happiness is:$smileProb", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -381,20 +301,15 @@ class EmotionAnalysisActivity : AppCompatActivity() {
     private fun processFace(faces: List<FirebaseVisionFace>) {
 
         for (face in faces) {
-
-            //textViewMood.text = getEmojiUnicode(0x1F60A) + getEmojiUnicode(0x1F60A) + getEmojiUnicode(0x1F60A)
-
             if (face.leftEyeOpenProbability != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
                 val leftEyeOpenProb = face.leftEyeOpenProbability
                 val rightEyeOpenProb = face.rightEyeOpenProbability
                 if (leftEyeOpenProb < 0.2 || rightEyeOpenProb < 0.2) {
-                    //textViewMood.text = getEmojiUnicode(0X1F609) + getEmojiUnicode(0X1F609) + getEmojiUnicode(0X1F609)
                 }
             }
             if (face.smilingProbability != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
                 val smileProb = face.smilingProbability
                 if (smileProb > 0.4) {
-                    //textViewMood.text = getEmojiUnicode(0x1F601) + getEmojiUnicode(0x1F601) + getEmojiUnicode(0x1F601)
                 }
             }
         }
@@ -409,7 +324,6 @@ class EmotionAnalysisActivity : AppCompatActivity() {
             if (allPermissionsGranted()) {
                 viewFinder.post { startCamera() }
             } else {
-                //Toast.makeText(this,"권한이 허용되지 않았습니다.",Toast.LENGTH_SHORT).show()
                 finish()
             }
             return
@@ -420,9 +334,7 @@ class EmotionAnalysisActivity : AppCompatActivity() {
         }
         if (allPermissionsGranted()) {
             startCamera()
-            //viewModel.startCamera(this, cam_emotion)
         } else {
-            //Toast.makeText(this, "Missing camera permission.", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
@@ -445,16 +357,9 @@ class EmotionAnalysisActivity : AppCompatActivity() {
                     })
                 }
 
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-
             try {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
-
-                // Bind use cases to camera
-                //cameraProvider.bindToLifecycle(this, cameraSelector, preview,  imageCapture, imageAnalyzer)
-
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
@@ -511,25 +416,7 @@ class EmotionAnalysisActivity : AppCompatActivity() {
             when (intent?.action) {
                 "com.example.eattogether_neep.RESULT_SAVE_IMAGE" -> {
                     resultFromServer = intent.getIntExtra("error", -1)
-                    /*if (resultFromServer == 200) {
-                        Log.d("EmotionActivity", "이미지 통신 성공")
-                        //localJoin(edt_join_url.text.toString())
-                    } else if (resultFromServer == 400) {
-                        Toast.makeText(
-                            this@EmotionAnalysisActivity,
-                            "이미지 통신 실패.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }*/
                 }
-                /*"com.example.eattogether_neep.RESULT_FINISH_PREDICT" -> {
-                    val intent = Intent(this@EmotionAnalysisActivity, WaitingReplyActivity::class.java)
-                    intent.putExtra("roomName", roomName)
-                    this@EmotionAnalysisActivity.startActivity(intent)
-                    this@EmotionAnalysisActivity.finish()
-
-                    //if
-                }*/
                 else -> return
             }
         }

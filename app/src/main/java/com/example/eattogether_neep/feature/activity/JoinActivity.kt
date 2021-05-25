@@ -51,8 +51,6 @@ class JoinActivity : AppCompatActivity() {
             } else {
                 roomName =  edt_join_url.text.toString()
                 sendJoinRoom(roomName, uuid)
-                //requestJoin(Integer.parseInt(edt_join_url.text.toString()))
-                //localJoin(edt_join_url.text.toString())
             }
         }
         socketReceiver = JoinReceiver()
@@ -69,10 +67,6 @@ class JoinActivity : AppCompatActivity() {
         intent.putExtra("roomName", roomName)
         startActivity(intent)
         finish()
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onDestroy() {

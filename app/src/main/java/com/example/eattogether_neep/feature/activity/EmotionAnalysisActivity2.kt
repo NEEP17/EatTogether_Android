@@ -68,12 +68,10 @@ private  var smileProb=0.0F
 private  var smileSum=0.0F
 private var photoPath:String?= null
 
-
+// Camera Capture로 이미지 REST 통신 (UI 상  Rectangle 안그려짐)
 class EmotionAnalysisActivity2 : AppCompatActivity() {
     private lateinit var viewFinder: TextureView
     private lateinit var uuid: String
-    var foodList=ArrayList<String>()
-    var images: Array<String> = arrayOf()
     var i=0
     private var imageCapture: ImageCapture? = null
 
@@ -87,9 +85,6 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
     private var isLoadingDetection = false
     private var roomName = ""
 
-    /* private val viewModel:MainViewModel by viewModels{
-        (application as EmotionDetectorApp).viewModelFactory
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,15 +96,12 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
         Log.e("Food Name: ", f_name[0].toString())
         Log.e("Food Image: ", f_img[0].toString())
 
-        //saveImage()
-        //avgPredict()
         checkPermission()
         startCameraThread()
-        //setMenuImageThread(f_name, f_img)
 
         try {
 
-            //IO.socket 메소드는 은 저 URL 을 토대로 클라이언트 객체를 Return 합니다.
+            //IO.socket 메소드는 URL를 토대로 클라이언트 객체를 Return 합니다.
             mSocket = IO.socket(SOCKET_URL)
         } catch (e: URISyntaxException) {
             Log.e("EmotionAnalysisActivity", e.reason)
@@ -127,32 +119,6 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
             facing = Facing.FRONT
             addFrameProcessor { if (!isLoadingDetection) detect(it) }
         }
-
-        /*viewFinder = findViewById(R.id.cam_emotion)
-
-        if (allPermissionsGranted()) {
-        viewFinder.setOnClickListener {
-            val intent = Intent(this, RankingActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-            viewFinder.post { startCamera() }
-        } else {
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
-
-        viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            updateTransform()
-        }*/
-
-    }
-
-    override fun onStart(){
-        super.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     override fun onDestroy() {
@@ -180,21 +146,17 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
                     Glide.with(this@EmotionAnalysisActivity2).load(f_img[i / 3]).into(img_food)
                     tv_food_num.text="후보 "+(i/3+1)
                     txt_food_name.text = f_name[i / 3]
-                    ///saveImage(i, getBase64Data(photoPath))
 
                     // 1초마다 표정, 기기번호, 음식번호 전송
                     takePhoto()
                     saveImage(i, getBase64Data(photoPath))
-                    //saveImage(i, encoder3(photoPath))
                     i++
 
-                    Log.d("1초마다 표정, 기기번호, 음식번호 전송", "Emotion Analysis enqueue every 1seconds")
                     smileSum+= smileProb
+
                     // 3초마다 기기번호, 음식번호
                     if(i%3==0){
-                        Log.d("3초마다 기기번호, 음식번호", "Emotion Analysis enqueue every 3seconds")
-                        //savePredict(smileSum / 3)
-                        smileSum=0.0F
+                       smileSum=0.0F
                     }
 
                     if((i/3)>= f_name.size) {
@@ -248,14 +210,9 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    var photoPath = photoFile.canonicalPath
                     val savedUri = Uri.fromFile(photoFile)
-                    Log.e("Before Base64 encoder photoFile", photoFile.toString())
-                    //decoder(sub_img, photoFile)
-                    Log.e("base64 with header",getBase64Data(photoFile.toString()))
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
                 }
             })
     }
@@ -333,29 +290,10 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
         return ""
     }
 
-    // Convert Image to BitmapArray?
-    private fun encoder4(path: String): String {
-        return ""
-    }
-
-    fun decoder(base64Str: String, pathFile: String): Unit{
-        val imageByteArray = Base64.getDecoder().decode(base64Str)
-        File(pathFile).writeBytes(imageByteArray)
-    }
-
-
     // 이미지 Base64코드 전송
     private fun saveImage(imageOrder: Int, base64Str: String) {
-        Log.d("SaveImage Called", "")
         val work = Intent()
-        var image_666="Dummy Base64 Code"
-        //var image64=encoder(photoFile.toString())
-        var foodImage22="file:///storage/emulated/0/Android/media/com.soyeon.cameraxtutorial/CameraX%20Tutorial/2020-08-28-21-24-24-668.jpg"
-        val encodedURL = Base64.getUrlEncoder().encodeToString(foodImage22.toByteArray())
-        //var image64=foodImage22.base64decoded
-        //encoder
 
-        ///val encodeString=encoder("src/main/res/drawable/neww.JPG")
         Log.d("SaveImage Called:", base64Str)
         work.putExtra("serviceFlag", "saveImage")
         work.putExtra("image", base64Str)
@@ -524,12 +462,11 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
     }
 
     private class LuminosityAnalyzer(private val listener: LumaListener2) : ImageAnalysis.Analyzer {
-
         private fun ByteBuffer.toByteArray(): ByteArray {
-            rewind()    // Rewind the buffer to zero
+            rewind()
             val data = ByteArray(remaining())
-            get(data)   // Copy the buffer into a byte array
-            return data // Return the byte array
+            get(data)
+            return data
         }
 
         override fun analyze(image: ImageProxy) {
@@ -548,7 +485,7 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it
-        ) == PackageManager.PERMISSION_GRANTED
+        ) == PERMISSION_GRANTED
     }
 
     private fun getOutputDirectory(): File {
@@ -557,33 +494,6 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
-
-    // firebase
-    /*private fun runDetector(bitmap: Bitmap) {
-        val image = FirebaseVisionImage.fromBitmap(bitmap)
-        val options = FirebaseVisionFaceDetectorOptions.Builder()
-            .build()
-
-        val detector = FirebaseVision.getInstance()
-            .getVisionFaceDetector(options)
-
-        detector.detectInImage(image)
-            .addOnSuccessListener { faces ->
-                processFaceResult(faces)
-
-            }.addOnFailureListener {
-                it.printStackTrace()
-            }
-
-    }*/
-
-    /*private fun processFaceResult(faces: MutableList<FirebaseVisionFace>) {
-        faces.forEach {
-            val bounds = it.boundingBox
-            val rectOverLay = RectOverlay(graphic_overlay, bounds)
-            graphic_overlay.add(rectOverLay)
-        }
-    }*/
 
     private fun checkPermission() {
         if (ContextCompat.checkSelfPermission(
@@ -603,16 +513,6 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
             when (intent?.action) {
                 "com.example.eattogether_neep.RESULT_SAVE_IMAGE" -> {
                     resultFromServer = intent.getIntExtra("error", -1)
-                    /*if (resultFromServer == 200) {
-                        Log.d("EmotionActivity", "이미지 통신 성공")
-                        //localJoin(edt_join_url.text.toString())
-                    } else if (resultFromServer == 400) {
-                        Toast.makeText(
-                            this@EmotionAnalysisActivity,
-                            "이미지 통신 실패.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }*/
                 }
                 else -> return
             }
@@ -623,8 +523,7 @@ class EmotionAnalysisActivity2 : AppCompatActivity() {
         private const val TAG = "EmotionAnalysis"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        private val REQUIRED_PERMISSIONS = arrayOf(CAMERA)
         private const val REQUEST_CAMERA_PERMISSION = 123
-        private var isFrontCamera = true
     }
 }

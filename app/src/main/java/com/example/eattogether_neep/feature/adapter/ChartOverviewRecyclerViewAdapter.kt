@@ -22,7 +22,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 class ChartOverviewRecyclerViewAdapter (val ctx: Context, var dataList: ArrayList<chart1>): RecyclerView.Adapter<ChartOverviewRecyclerViewAdapter.Holder>() {
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): Holder {
         val view: View = LayoutInflater.from(ctx)
-            .inflate(com.example.eattogether_neep.R.layout.rv_chart, viewGroup, false)
+            .inflate(R.layout.rv_chart, viewGroup, false)
         return Holder(view)
     }
     var u_num = ArrayList<String>()
@@ -98,7 +98,7 @@ class ChartOverviewRecyclerViewAdapter (val ctx: Context, var dataList: ArrayLis
         }
     }
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var name = itemView.findViewById(com.example.eattogether_neep.R.id.rv_chart_form_name) as TextView
-        var chart = itemView.findViewById(com.example.eattogether_neep.R.id.rv_chart) as BarChart
+        var name = itemView.findViewById(R.id.rv_chart_form_name) as TextView
+        var chart = itemView.findViewById(R.id.rv_chart) as BarChart
     }
 }
