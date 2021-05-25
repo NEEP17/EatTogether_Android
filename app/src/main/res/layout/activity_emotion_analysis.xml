@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.Activity.EmotionAnalysisActivity"
+    tools:context=".feature.activity.EmotionAnalysisActivity"
     android:orientation="vertical">
 
     <com.otaliastudios.cameraview.CameraView

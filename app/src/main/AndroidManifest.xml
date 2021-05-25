@@ -47,7 +47,7 @@
             android:required="false" />
 
         <service
-            android:name=".SOCKET.SocketService"
+            android:name=".socket.SocketService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
@@ -73,18 +73,18 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".UI.Activity.LaunchActivity" />
-        <activity android:name=".UI.Activity.RankingActivity" />
-        <activity android:name=".UI.Activity.PreferenceCheckActivity" />
-        <activity android:name=".UI.Activity.WaitingActivity" />
-        <activity android:name=".UI.Activity.WaitingReplyActivity"/>
-        <activity android:name=".UI.Activity.MakeUrlActivity" />
-        <activity android:name=".UI.Activity.JoinActivity" />
-        <activity android:name=".UI.Activity.EmotionAnalysisActivity" />
-        <activity android:name=".UI.Activity.EmotionAnalysisActivity2" />
-        <activity android:name=".UI.Activity.EmotionAnalysisActivity3" />
-        <activity android:name=".UI.Activity.ChartActivity"/>
-        <activity android:name=".UI.Activity.MainActivity">
+        <activity android:name=".feature.activity.LaunchActivity" />
+        <activity android:name=".feature.activity.RankingActivity" />
+        <activity android:name=".feature.activity.PreferenceCheckActivity" />
+        <activity android:name=".feature.activity.WaitingActivity" />
+        <activity android:name=".feature.activity.WaitingReplyActivity"/>
+        <activity android:name=".feature.activity.MakeUrlActivity" />
+        <activity android:name=".feature.activity.JoinActivity" />
+        <activity android:name=".feature.activity.EmotionAnalysisActivity" />
+        <activity android:name=".feature.activity.EmotionAnalysisActivity2" />
+        <activity android:name=".feature.activity.EmotionAnalysisActivity3" />
+        <activity android:name=".feature.activity.ChartActivity"/>
+        <activity android:name=".feature.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

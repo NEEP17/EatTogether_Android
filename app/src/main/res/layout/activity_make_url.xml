@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f8f8f8"
-    tools:context=".UI.Activity.MakeUrlActivity">
+    tools:context=".feature.activity.MakeUrlActivity">
 
     <View
         android:layout_width="match_parent"

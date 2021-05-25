@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#f8f8f8"
     android:orientation="vertical"
-    tools:context=".UI.Activity.PreferenceCheckActivity">
+    tools:context=".feature.activity.PreferenceCheckActivity">
 
     <View
         android:layout_width="0dp"
